@@ -1,18 +1,20 @@
 package pro.xstore.api.message.response;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import pro.xstore.api.message.error.APIReplyParseException;
 import pro.xstore.api.message.records.SymbolRecord;
 
+import java.util.LinkedList;
+import java.util.List;
+
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class AllSymbolsResponse extends BaseResponse {
 
-    private final List<SymbolRecord> symbolRecords = new LinkedList<SymbolRecord>();
+    List<SymbolRecord> symbolRecords = new LinkedList<>();
 
     public AllSymbolsResponse(String body) throws APIReplyParseException, APIErrorResponse {
         super(body);
@@ -23,14 +25,5 @@ public class AllSymbolsResponse extends BaseResponse {
             symbolRecord.setFieldsFromJSONObject(e);
             this.symbolRecords.add(symbolRecord);
         }
-    }
-
-    public List<SymbolRecord> getSymbolRecords() {
-        return symbolRecords;
-    }
-
-    @Override
-    public String toString() {
-        return "AllSymbolsResponse{" + "symbolRecords=" + symbolRecords + '}';
     }
 }

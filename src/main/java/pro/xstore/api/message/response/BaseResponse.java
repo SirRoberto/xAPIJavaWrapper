@@ -1,18 +1,22 @@
 package pro.xstore.api.message.response;
 
+import lombok.Value;
+import lombok.experimental.NonFinal;
 import org.json.JSONObject;
 import pro.xstore.api.message.error.APIReplyParseException;
 import pro.xstore.api.message.error.ERR_CODE;
 import pro.xstore.api.sync.SyncAPIConnector;
 
+@Value
+@NonFinal
 public class BaseResponse {
 
-    private final Boolean status;
-    private final String errorDescr;
-    private final ERR_CODE errCode;
-    private final Object returnData;
-    private JSONObject redirectJson;
-    private final String streamSessionId;
+    Boolean status;
+    String errorDescr;
+    ERR_CODE errCode;
+    Object returnData;
+    JSONObject redirectJson;
+    String streamSessionId;
 
     public BaseResponse(String body) throws APIReplyParseException, APIErrorResponse {
         JSONObject ob;
@@ -45,47 +49,11 @@ public class BaseResponse {
                 }
             }
 
-            try {
-                this.redirectJson = (JSONObject) ob.get("redirect");
-            } catch (Exception ignore) {
-                this.redirectJson = null;
-            }
+            this.redirectJson = ob.has("redirect") ? (JSONObject) ob.get("redirect") : null;
 
             if (Boolean.FALSE.equals(this.status) && SyncAPIConnector.throwOnError && redirectJson == null) {
                 throw new APIErrorResponse(errCode, errorDescr, body);
             }
         }
-    }
-
-    public Object getReturnData() {
-        return returnData;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public String getErrorDescr() {
-        return errorDescr;
-    }
-
-    public ERR_CODE getErrCode() {
-        return errCode;
-    }
-
-    public String getStreamSessionId() {
-        return streamSessionId;
-    }
-
-    public JSONObject getRedirectJson() {
-        return redirectJson;
-    }
-
-    @Override
-    public String toString() {
-        return "BaseResponse [status=" + status + ", errorDescr=" + errorDescr
-                + ", errCode=" + errCode + ", returnData=" + returnData
-                + ", redirectJson=" + redirectJson + ", streamSessionId="
-                + streamSessionId + "]";
     }
 }

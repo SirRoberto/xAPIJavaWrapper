@@ -1,5 +1,7 @@
 package pro.xstore.api.message.response;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pro.xstore.api.message.error.APIReplyParseException;
@@ -9,11 +11,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class TradingHoursResponse extends BaseResponse {
 
-    private final List<String> symbols = new LinkedList<String>();
-    private final List<List<HoursRecord>> quotes = new LinkedList<List<HoursRecord>>();
-    private final List<List<HoursRecord>> trading = new LinkedList<List<HoursRecord>>();
+    List<String> symbols = new LinkedList<>();
+    List<List<HoursRecord>> quotes = new LinkedList<>();
+    List<List<HoursRecord>> trading = new LinkedList<>();
 
     public TradingHoursResponse(String body) throws APIReplyParseException, APIErrorResponse {
         super(body);
@@ -45,23 +49,5 @@ public class TradingHoursResponse extends BaseResponse {
             }
             trading.add(tradingList);
         }
-    }
-
-    public List<String> getSymbols() {
-        return symbols;
-    }
-
-    public List<List<HoursRecord>> getQuotes() {
-        return quotes;
-    }
-
-    public List<List<HoursRecord>> getTrading() {
-        return trading;
-    }
-
-    @Override
-    public String toString() {
-        return "TradingHoursResponse [symbols=" + symbols + ", quotes="
-                + quotes + ", trading=" + trading + "]";
     }
 }

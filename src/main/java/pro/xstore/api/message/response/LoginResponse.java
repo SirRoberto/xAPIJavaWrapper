@@ -1,34 +1,30 @@
 package pro.xstore.api.message.response;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.json.JSONObject;
 
 import pro.xstore.api.message.error.APIReplyParseException;
 import pro.xstore.api.message.records.RedirectRecord;
 
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class LoginResponse extends BaseResponse {
 
-	private RedirectRecord redirect;
+    RedirectRecord redirect;
 
     public LoginResponse(String body) throws APIReplyParseException, APIErrorResponse {
         super(body);
         JSONObject redirectJson = super.getRedirectJson();
         if (redirectJson != null) {
-        	redirect = new RedirectRecord();
-        	redirect.setFieldsFromJSONObject(redirectJson);
+            redirect = new RedirectRecord();
+            redirect.setFieldsFromJSONObject(redirectJson);
+        } else {
+            redirect = null;
         }
     }
 
-    public RedirectRecord getRedirect() {
-		return redirect;
-	}
-
-	public boolean isRedirectSet() {
-    	return this.redirect != null;
+    public boolean isRedirectSet() {
+        return this.redirect != null;
     }
-
-	@Override
-	public String toString() {
-		return "LoginResponse [getStatus()=" + getStatus()
-				+ ", getStreamSessionId()=" + getStreamSessionId() + "]";
-	}
 }

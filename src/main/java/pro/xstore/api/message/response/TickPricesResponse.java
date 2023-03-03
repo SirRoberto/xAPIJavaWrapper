@@ -1,5 +1,7 @@
 package pro.xstore.api.message.response;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pro.xstore.api.message.error.APIReplyParseException;
@@ -8,9 +10,11 @@ import pro.xstore.api.message.records.TickRecord;
 import java.util.LinkedList;
 import java.util.List;
 
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class TickPricesResponse extends BaseResponse {
 
-    private final List<TickRecord> ticks = new LinkedList<TickRecord>();
+    List<TickRecord> ticks = new LinkedList<>();
 
     public TickPricesResponse(String body) throws APIReplyParseException, APIErrorResponse {
         super(body);
@@ -22,14 +26,5 @@ public class TickPricesResponse extends BaseResponse {
             record.setFieldsFromJSONObject(e);
             ticks.add(record);
         }
-    }
-
-    public List<TickRecord> getTicks() {
-        return ticks;
-    }
-
-    @Override
-    public String toString() {
-        return "TickPricesResponse{ticks=" + ticks + '}';
     }
 }

@@ -1,5 +1,7 @@
 package pro.xstore.api.message.response;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pro.xstore.api.message.error.APIReplyParseException;
@@ -8,9 +10,11 @@ import pro.xstore.api.message.records.NewsTopicRecord;
 import java.util.LinkedList;
 import java.util.List;
 
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class NewsResponse extends BaseResponse {
 
-    private final List<NewsTopicRecord> newsTopicRecords = new LinkedList<NewsTopicRecord>();
+    List<NewsTopicRecord> newsTopicRecords = new LinkedList<>();
 
     public NewsResponse(String body) throws APIReplyParseException, APIErrorResponse {
         super(body);
@@ -21,14 +25,5 @@ public class NewsResponse extends BaseResponse {
             record.setFieldsFromJSONObject(e);
             newsTopicRecords.add(record);
         }
-    }
-
-    public List<NewsTopicRecord> getNewsTopicRecords() {
-        return newsTopicRecords;
-    }
-
-    @Override
-    public String toString() {
-        return "NewsResponse{" + "newsTopicRecords=" + newsTopicRecords + '}';
     }
 }

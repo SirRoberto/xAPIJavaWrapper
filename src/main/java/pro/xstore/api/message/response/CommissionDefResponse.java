@@ -1,12 +1,16 @@
 package pro.xstore.api.message.response;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.json.JSONObject;
 import pro.xstore.api.message.error.APIReplyParseException;
 
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class CommissionDefResponse extends BaseResponse {
 
-    private double commission;
-    private double rateOfExchange;
+    double commission;
+    double rateOfExchange;
 
     public CommissionDefResponse(String body) throws APIReplyParseException, APIErrorResponse {
         super(body);
@@ -14,20 +18,9 @@ public class CommissionDefResponse extends BaseResponse {
         if (rd != null) {
             this.commission = (Double) rd.get("commission");
             this.rateOfExchange = (Double) rd.get("rateOfExchange");
+        } else {
+            commission = 0;
+            rateOfExchange = 0;
         }
-    }
-
-    public double getCommission() {
-        return commission;
-    }
-
-    public double getRateOfExchange() {
-        return rateOfExchange;
-    }
-
-    @Override
-    public String toString() {
-        return "CommissionDefResponse [commission=" + commission
-                + ", rateOfExchange=" + rateOfExchange + "]";
     }
 }

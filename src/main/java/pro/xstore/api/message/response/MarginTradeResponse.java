@@ -1,26 +1,23 @@
 package pro.xstore.api.message.response;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.json.JSONObject;
 import pro.xstore.api.message.error.APIReplyParseException;
 
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class MarginTradeResponse extends BaseResponse {
 
-    private double margin;
+    double margin;
 
     public MarginTradeResponse(String body) throws APIReplyParseException, APIErrorResponse {
         super(body);
         JSONObject rd = (JSONObject) this.getReturnData();
         if (rd != null) {
-            this.margin = (Double) rd.get("margin");
+            this.margin = rd.getDouble("margin");
+        } else {
+            this.margin = 0;
         }
-    }
-
-    public double getMargin() {
-        return margin;
-    }
-
-    @Override
-    public String toString() {
-        return "MarginTradeResponse {margin=" + margin + "}";
     }
 }
