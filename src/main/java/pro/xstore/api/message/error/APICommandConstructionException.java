@@ -1,14 +1,18 @@
 package pro.xstore.api.message.error;
 
+import java.io.Serial;
+
 public class APICommandConstructionException extends Exception {
 
-	private static final long serialVersionUID = -7824221547649611706L;
+    @Serial
+    private static final long serialVersionUID = -7824221547649611706L;
 
-	/**
+    /**
      * Creates a new instance of
      * <code>APICommandConstructionException</code> without detail message.
      */
-    public APICommandConstructionException() {}
+    public APICommandConstructionException() {
+    }
 
     /**
      * Constructs an instance of

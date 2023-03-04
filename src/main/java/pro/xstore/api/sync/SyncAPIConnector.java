@@ -1,6 +1,10 @@
 package pro.xstore.api.sync;
 
-import pro.xstore.api.message.command.BaseCommand;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import pro.xstore.api.message.command.BaseRequest;
 import pro.xstore.api.message.error.APICommunicationException;
 import pro.xstore.api.streaming.StreamingListener;
 import pro.xstore.api.sync.ServerData.ServerEnum;
@@ -34,6 +38,11 @@ public class SyncAPIConnector extends StreamingConnector {
 	private SocketFactory socketFactory;
 	private boolean socketFactoryCreated = false;
 
+	private final ObjectWriter objectWriter = new ObjectMapper()
+			.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+			.writer()
+			.withDefaultPrettyPrinter();
+
 	/**
 	 * In order to use the wrapper in the multithreaded environment, multiple instances of this class have to be created (separate sessions).
 	 * @param server
@@ -53,7 +62,7 @@ public class SyncAPIConnector extends StreamingConnector {
 	private void setUp(Server server, boolean isFromLoginRedirect) throws IOException {
 		this.server = server;
 		streamConnected = false;
-		
+
 		String address = this.server.getAddress();
 		int port = this.server.getMainPort();
 		boolean partOfXapiList = this.server.isPartOfXapiList();
@@ -76,7 +85,7 @@ public class SyncAPIConnector extends StreamingConnector {
 	                sc.init(null, trustAllCerts, new SecureRandom());
 	                SSLContext.setDefault(sc);
 	            } catch (Exception ignore) {}
-	
+
 				socketFactory = SSLSocketFactory.getDefault();
 				socketFactoryCreated = true;
             }
@@ -101,7 +110,7 @@ public class SyncAPIConnector extends StreamingConnector {
 	public boolean isConnected() {
 		return super.connected;
 	}
-	
+
 	private void connect(InetSocketAddress socketAddress, int timeout_in_millis, boolean tryNextServer, boolean secure) throws IOException {
 		if (tryNextServer) {
 			try {
@@ -123,16 +132,16 @@ public class SyncAPIConnector extends StreamingConnector {
 			socket.connect(socketAddress, timeout_in_millis);
 		}
 	}
-	
+
 	private void createSocketHelper (boolean secure) throws IOException {
 		socket = secure ? socketFactory.createSocket() : new Socket();
 	}
-	
+
 	public void redirect(Server server) throws APICommunicationException {
 		if(server != null && connected) {
 			boolean wasStreamConnected = this.streamConnected;
 			StreamingListener oldSl = this.sl;
-			
+
 			if(wasStreamConnected) {
 				this.disconnectStream();
 			}
@@ -150,10 +159,10 @@ public class SyncAPIConnector extends StreamingConnector {
 	/**
 	 * Execute command withholding API inter-command timeout
 	 */
-	public synchronized String safeExecuteCommand(BaseCommand cmd) throws APICommunicationException {
-		String cmdName = cmd.getCommandName();
+	public synchronized String safeExecuteCommand(BaseRequest cmd) throws APICommunicationException, JsonProcessingException {
+		String cmdName = cmd.getCommand();
 		Long lastTimeExecuted = this.commandToTimestamp.get(cmdName);
-		Long cmdTimeout = cmd.getTimeoutMillis();
+		long cmdTimeout = BaseRequest.TIMEOUT_MILLIS;
 		long timeToWait;
 		if (lastTimeExecuted == null) {
 			timeToWait = 0L;
@@ -170,12 +179,12 @@ public class SyncAPIConnector extends StreamingConnector {
 			}
 		}
 
-		String js = cmd.toJSONString();
+		String js = objectWriter.writeValueAsString(cmd);
 		String result = this.executeCommandNoTimeout(js);
 		if(result.isEmpty()) {
-			throw new APICommunicationException("Server not responding");   
+			throw new APICommunicationException("Server not responding");
 		}
-		
+
 		Calendar cal = Calendar.getInstance();
 		this.commandToTimestamp.put(cmdName, cal.getTimeInMillis());
 		return result;
@@ -207,14 +216,14 @@ public class SyncAPIConnector extends StreamingConnector {
 			while (!readDone
 					&& (sockOK = this.checkSocketState(APISocketOperation.READ))
 					&& ((newline = reader.readLine()) != null)) {
-				
+
 				newline = newline.trim();
-				
+
 				if ("".equals(newline) && lastChar == '}') {
 					readDone = true;
 				} else {
 					sb.append(newline);
-					
+
 					if (newline.length() != 0) {
 						lastChar = newline.charAt(newline.length() - 1);
 					}
