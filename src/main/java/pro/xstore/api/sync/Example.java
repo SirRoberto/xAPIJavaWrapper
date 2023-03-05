@@ -2,27 +2,41 @@ package pro.xstore.api.sync;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.json.JSONObject;
-import pro.xstore.api.message.command.APICommandFactory;
+import pro.xstore.api.message.commands.LoginRequest;
+import pro.xstore.api.message.responses.LoginResponse;
 import pro.xstore.api.sync.ServerData.ServerEnum;
 
 public class Example {
 
-	ObjectWriter ow = new ObjectMapper()
-			.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-			.writer()
-			.withDefaultPrettyPrinter();
+    ObjectWriter ow = new ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .writer()
+            .withDefaultPrettyPrinter();
 
-	public void runExample(ServerEnum server, Credentials credentials) throws Exception {
-		try {
-			var connector = new SyncAPIConnector(server);
-			var loginRequest = APICommandFactory.createLoginCommand(credentials);
-			System.out.println(loginRequest);
-			System.out.println(ow.writeValueAsString(loginRequest));
-			String response = APICommandFactory.execute(connector, loginRequest);
-			System.out.println(new JSONObject(response).toString(4));
-//			LoginResponse loginResponse = APICommandFactory.executeLoginCommand(connector, credentials);
+    ObjectReader or = new ObjectMapper()
+            .readerFor(LoginResponse.class);
+
+    public void runExample(ServerEnum server, Credentials credentials) throws Exception {
+        try {
+            var connector = new SyncAPIConnector(server);
+            var loginRequest = LoginRequest.builder()
+                    .arguments(new LoginRequest.Arguments(
+                            credentials.getLogin(),
+                            credentials.getPassword(),
+                            credentials.getAppName()
+                    ))
+                    .customTag("customTag")
+                    .build();
+            System.out.println(loginRequest);
+            System.out.println(ow.writeValueAsString(loginRequest));
+            String response = connector.safeExecuteCommand(loginRequest);
+            System.out.println(new JSONObject(response).toString(4));
+            LoginResponse loginResponse = or.readValue(response);
+            System.out.println(loginResponse);
+
 
 //			if (loginResponse.getStatus())
 //			{
@@ -69,10 +83,10 @@ public class Example {
 //				System.out.println("Stream disconnected again.");
 //				System.exit(0);
 //			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
 //	protected Map<String,Server> getAvailableServers() {
 //		return ServerData.getProductionServers();

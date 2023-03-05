@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import pro.xstore.api.message.command.BaseRequest;
+import pro.xstore.api.message.commands.BaseRequest;
 import pro.xstore.api.message.error.APICommunicationException;
 import pro.xstore.api.streaming.StreamingListener;
 import pro.xstore.api.sync.ServerData.ServerEnum;

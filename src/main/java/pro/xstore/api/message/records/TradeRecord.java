@@ -1,39 +1,37 @@
 package pro.xstore.api.message.records;
 
-import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
+import pro.xstore.api.enums.TradeOperation;
 
-public class TradeRecord extends WrapperTradeRecord {
+import java.sql.Timestamp;
 
-    private long timestamp;
-
-    private Long open_time;
-
-    @Override
-    public void setFieldsFromJSONObject(JSONObject ob) {
-        super.setFieldsFromJSONObject(ob);
-        this.timestamp = (Long) ob.get("timestamp");
-
-        this.open_time = (Long) ob.get("open_time");
-
-        super.close_time = (Long) ob.get("close_time");
-        super.expiration = (Long) ob.get("expiration");
-        super.position = (Long) ob.get("position");
-        super.profit = Double.parseDouble(ob.get("profit").toString());
-        super.sl = Double.parseDouble(ob.get("sl").toString());
-        super.tp = Double.parseDouble(ob.get("tp").toString());
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public Long getOpen_time() {
-        return open_time;
-    }
-
-    @Override
-    public String toString() {
-        return "TradeRecord [timestamp=" + timestamp + ", open_time="
-                + open_time + ", toString()=" + super.toString() + "]";
-    }
+@Builder
+@Jacksonized
+public record TradeRecord(
+        TradeOperation cmd,
+        String symbol,
+        @JsonProperty("open_price") double openPrice,
+        @JsonProperty("open_time") Timestamp openTime,
+        @JsonProperty("close_price") double closePrice,
+        @JsonProperty("close_time") Timestamp closeTime,
+        @JsonProperty("margin_rate") double marginRate,
+        double volume,
+        double tp,
+        double sl,
+        boolean closed,
+        int digits,
+        Timestamp expiration,
+        int offset,
+        long order,
+        long order2,
+        long position,
+        double profit,
+        double storage,
+        Timestamp timestamp,
+        String comment,
+        Double commission,
+        String customComment
+) {
 }

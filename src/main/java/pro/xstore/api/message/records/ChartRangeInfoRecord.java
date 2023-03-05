@@ -1,46 +1,18 @@
 package pro.xstore.api.message.records;
 
-import org.json.JSONObject;
-import pro.xstore.api.message.codes.PERIOD_CODE;
+import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
+import pro.xstore.api.enums.PeriodCode;
 
+import java.sql.Timestamp;
 
-public class ChartRangeInfoRecord {
-
-    private final String symbol;
-    private final PERIOD_CODE period;
-    private final long start;
-    private final long end;
-    private final long ticks;
-
-    public ChartRangeInfoRecord(String symbol, PERIOD_CODE period, long start, long end, long ticks) {
-        this.symbol = symbol;
-        this.period = period;
-        this.start = start;
-        this.end = end;
-        this.ticks = ticks;
-    }
-
-    public ChartRangeInfoRecord(String symbol, PERIOD_CODE period, long start, long end) {
-        this.symbol = symbol;
-        this.period = period;
-        this.start = start;
-        this.end = end;
-
-        this.ticks = 0L;
-    }
-
-    public JSONObject toJSONObject() {
-        JSONObject obj = new JSONObject();
-        obj.put("symbol", symbol);
-        obj.put("period", period.getCode());
-        obj.put("start", start);
-        obj.put("end", end);
-        obj.put("ticks", ticks);
-        return obj;
-    }
-
-    @Override
-    public String toString() {
-        return "ChartRangeInfoRecord{" + "symbol=" + symbol + ", period=" + period + ", start=" + start + ", end=" + end + ", ticks=" + ticks + '}';
-    }
+@Builder
+@Jacksonized
+public record ChartRangeInfoRecord(
+        String symbol,
+        PeriodCode period,
+        Timestamp start,
+        Timestamp end,
+        long ticks
+) {
 }

@@ -1,13 +1,6 @@
 package pro.xstore.api.streaming;
 
-import pro.xstore.api.message.records.SBalanceRecord;
-import pro.xstore.api.message.records.SCandleRecord;
-import pro.xstore.api.message.records.SKeepAliveRecord;
-import pro.xstore.api.message.records.SNewsRecord;
-import pro.xstore.api.message.records.SProfitRecord;
-import pro.xstore.api.message.records.STickRecord;
-import pro.xstore.api.message.records.STradeRecord;
-import pro.xstore.api.message.records.STradeStatusRecord;
+import pro.xstore.api.streaming.records.*;
 
 public interface StreamingListenerInterface {
     public void receiveTradeRecord(STradeRecord tradeRecord);
